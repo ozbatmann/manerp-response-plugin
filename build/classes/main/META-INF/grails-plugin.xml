@@ -1,0 +1,19 @@
+<plugin name='manerpResponsePlugin' version='0.1.2' grailsVersion='3.3.9 &gt; *'>
+  <type>manerp.response.plugin.ManerpResponsePluginGrailsPlugin</type>
+  <grailsVersion>3.3.9 &gt; *</grailsVersion>
+  <authorEmail></authorEmail>
+  <pluginExcludes>[grails-app/views/error.gsp]</pluginExcludes>
+  <author>Your name</author>
+  <documentation>http://grails.org/plugin/manerp-response-plugin</documentation>
+  <profiles>[web]</profiles>
+  <name>manerp-response-plugin</name>
+  <description>Brief summary/description of the plugin.
+</description>
+  <title>Manerp Response Plugin</title>
+  <version />
+  <resources>
+    <resource>manerp.response.plugin.UrlMappings</resource>
+    <resource>manerp.response.plugin.Application</resource>
+    <resource>manerp.response.plugin.BootStrap</resource>
+  </resources>
+</plugin>

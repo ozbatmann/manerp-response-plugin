@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+    }
+}
+
+version "0.1.2"
+group "tr.com.manerp"
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "org.grails.grails-plugin"
+apply plugin: "org.grails.grails-plugin-publish"
+
+repositories {
+    mavenLocal()
+    maven { url "https://repo.grails.org/grails/core" }
+}
+
+dependencies {
+    console "org.grails:grails-console"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.grails:grails-core"
+    provided "org.grails:grails-plugin-services"
+    compile "org.grails:grails-dependencies"
+    compile "org.grails:grails-web-boot"
+    compile "org.grails:grails-datastore-rest-client"
+    profile "org.grails.profiles:web-plugin"
+}
+
+// enable if you wish to package this plugin as a standalone application
+bootRepackage.enabled = false
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId "tr.com.manerp"
+            artifactId "manerp-response-plugin"
+            version "$version"
+        }
+    }
+    repositories {
+
+    }
+}
+
+
