@@ -24,21 +24,21 @@ class ManePaginationProperties {
 
     private void parseSortParamToList(String sortParam) {
 
-        String[] sortList = sortParam.split(",")
+        String[] sortList = sortParam.split(',')
 
         for ( String sort : sortList ) {
 
-            String[] kv = sort.split(" ")
+            String[] kv = sort.split(' ')
 
             if ( kv.length == 1 ) {
 
-                sortPairList.add(new SortPair(kv[0], "asc"))
+                sortPairList.add(new SortPair(kv[0], 'asc'))
             } else if ( kv.length == 2 ) {
 
                 String key = kv[0]
                 String value = kv[1].toLowerCase()
 
-                if ( value == "asc" || value == "desc" ) {
+                if ( value == 'asc' || value == 'desc' ) {
 
                     sortPairList.add(new SortPair(key, value))
                 }
