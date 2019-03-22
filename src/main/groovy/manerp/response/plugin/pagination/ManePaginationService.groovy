@@ -9,7 +9,7 @@ class ManePaginationService {
         def criteria = new DetachedCriteria(clss).build {
 
             if ( closure ) {
-                closure.delegate = closure
+                closure.delegate = delegate
                 closure()
             }
 
