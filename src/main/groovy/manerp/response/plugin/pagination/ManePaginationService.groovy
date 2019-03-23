@@ -9,6 +9,7 @@ class ManePaginationService {
         def criteria = new DetachedCriteria(clss).build {
 
             if ( closure ) {
+                closure.resolveStrategy = DELEGATE_ONLY
                 closure.delegate = delegate
                 closure()
             }
