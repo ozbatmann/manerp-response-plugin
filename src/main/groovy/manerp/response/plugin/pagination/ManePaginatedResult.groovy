@@ -20,7 +20,7 @@ class ManePaginatedResult {
                 metaData: [
                         pagination: [
                                 offset    : properties.offset,
-                                limit     : properties.max,
+                                limit     : properties.limit,
                                 totalCount: totalCount
                         ]
                 ]

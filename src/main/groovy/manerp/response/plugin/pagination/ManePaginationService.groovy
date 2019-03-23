@@ -19,7 +19,7 @@ class ManePaginationService {
 
         }
 
-        def list = criteria.list(offset: properties.offset, max: properties.max)
+        def list = criteria.list(offset: properties.offset, max: properties.limit)
 
         return new ManePaginatedResult(list, list.totalCount as int, properties)
     }
