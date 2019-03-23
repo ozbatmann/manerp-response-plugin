@@ -16,7 +16,7 @@ class ManePaginatedResult {
     Map toMap() {
 
         Map map = [
-                data    : data,
+                items   : data,
                 metaData: [
                         pagination: [
                                 offset    : properties.offset,

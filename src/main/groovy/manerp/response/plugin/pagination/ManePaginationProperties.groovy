@@ -2,23 +2,23 @@ package manerp.response.plugin.pagination
 
 class ManePaginationProperties {
 
-    int offset
-    short max
-    List<SortPair> sortPairList
+    int offset = 0
+    short limit = 10
+    List<SortPair> sortPairList = new ArrayList<SortPair>()
 
-    ManePaginationProperties(short max, int offset) {
+    ManePaginationProperties(short limit, int offset) {
 
-        if ( max > 1000 ) throw new Exception('Maximum result cannot be greater than 1000')
+        if ( limit > 1000 ) throw new Exception('Max result cannot be greater than 1000')
         if ( offset < 0 ) throw new Exception('Offset cannot be a negative value')
 
-        this.max = max
+        this.limit = limit
         this.offset = offset
         sortPairList = new ArrayList<SortPair>()
     }
 
-    ManePaginationProperties(short max, int offset, String sortParam) {
+    ManePaginationProperties(short limit, int offset, String sortParam) {
 
-        this(max, offset)
+        this(limit, offset)
         parseSortParamToList(sortParam)
     }
 
