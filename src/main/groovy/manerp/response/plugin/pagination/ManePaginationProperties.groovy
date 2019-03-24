@@ -19,7 +19,7 @@ class ManePaginationProperties {
     ManePaginationProperties(short limit, int offset, String sortParam) {
 
         this(limit, offset)
-        parseSortParamToList(sortParam)
+        if ( sortParam ) parseSortParamToList(sortParam)
     }
 
     private void parseSortParamToList(String sortParam) {
