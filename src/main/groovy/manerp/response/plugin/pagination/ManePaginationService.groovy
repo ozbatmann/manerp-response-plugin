@@ -39,13 +39,13 @@ class ManePaginationService
 
             filteredList = []
 
-            paginatedList.each {
+            paginatedList.each { item ->
 
                 Map filteredMap = [:]
 
                 for ( def field in fieldList ) {
 
-                    def fieldValue = it.getAt(field)
+                    def fieldValue = item.getAt(field)
 
                     // to lazy load domain classes
                     fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
