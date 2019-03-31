@@ -59,6 +59,7 @@ class ManePaginationProperties
     private void parseFieldsToList(String fields)
     {
         this.fieldList = (fields?.replaceAll('\\s', '')).split(',')
+        if ( this.fieldList.size() > 100 ) throw new Exception('Number of requested fields cannot be greater than 100')
     }
 
 }
