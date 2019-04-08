@@ -1,5 +1,6 @@
 package manerp.response.plugin.pagination
 
+import grails.converters.JSON
 import grails.gorm.DetachedCriteria
 
 class ManePaginationService
@@ -45,12 +46,33 @@ class ManePaginationService
 
                 for ( def field in fieldList ) {
 
-                    def fieldValue = item.getAt(field)
+                    def fieldValue
 
-                    // to lazy load domain classes
-                    fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
+                    if ( field instanceof HashMap ) {
 
-                    filteredMap.put(field, fieldValue)
+                        String key = field.keySet().getAt(0)
+                        List domainFields = field.values().getAt(0)
+                        def domain = item.getAt(key)
+
+                        Map domainMap = [:]
+
+                        domainFields.each { f ->
+                            if ( domain.hasProperty(f) ) {
+                                domainMap.put(f, domain[f])
+                            }
+                        }
+
+                        fieldValue = domainMap
+                        filteredMap.put(field.keySet().getAt(0), fieldValue)
+                    } else {
+
+                        fieldValue = item.getAt(field)
+
+                        // to lazy load domain classes
+                        fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
+                        filteredMap.put(field, fieldValue)
+                    }
+
                 }
 
                 filteredList.add(filteredMap)
@@ -66,7 +88,16 @@ class ManePaginationService
         clssPropertiesSet.add('id')
         if ( excludedFieldSet ) clssPropertiesSet.removeAll(excludedFieldSet)
 
-        fieldList.retainAll(clssPropertiesSet)
+        fieldList.retainAll { field ->
+
+            if ( field instanceof String ) {
+
+                field in clssPropertiesSet
+            } else if ( field instanceof HashMap ) {
+
+                field.keySet().getAt(0) in clssPropertiesSet
+            }
+        }
 
         fieldList
     }

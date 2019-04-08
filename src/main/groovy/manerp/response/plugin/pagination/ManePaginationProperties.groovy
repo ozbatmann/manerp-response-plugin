@@ -3,10 +3,11 @@ package manerp.response.plugin.pagination
 class ManePaginationProperties
 {
 
+    private static final FIELD_QUERY_THRESHOLD = 50
     int offset = 0
     short limit = 10
     ArrayList<SortPair> sortPairList = new ArrayList<SortPair>()
-    ArrayList<String> fieldList = new ArrayList<String>()
+    ArrayList<Object> fieldList = new ArrayList<Object>()
 
     ManePaginationProperties(short limit, int offset)
     {
@@ -59,7 +60,30 @@ class ManePaginationProperties
     private void parseFieldsToList(String fields)
     {
         this.fieldList = (fields?.replaceAll('\\s', '')).split(',')
-        if ( this.fieldList.size() > 100 ) throw new Exception('Number of requested fields cannot be greater than 100')
+
+        if ( this.fieldList.size() > FIELD_QUERY_THRESHOLD ) throw new Exception("Number of requested fields cannot be greater than ${FIELD_QUERY_THRESHOLD}")
+
+        for ( int i = 0; i < fieldList.size(); i++ ) {
+
+            String field = fieldList.get(i) as String
+
+            if ( field.contains("=") ) {
+
+                Map<String, List> fieldMap = new HashMap<>()
+                List<String> keyValueList = field.split('=')
+
+                if ( keyValueList.size() > 2 ) throw new Exception("Invalid syntax for query")
+
+                String key = keyValueList.remove(0)
+                List<String> values = keyValueList.get(0).split(';')
+
+                if ( values.size() > FIELD_QUERY_THRESHOLD ) throw new Exception("Number of requested fields cannot be greater than ${FIELD_QUERY_THRESHOLD}")
+
+                fieldMap.put(key, values)
+                fieldList.set(i, fieldMap)
+            }
+        }
+
     }
 
 }
