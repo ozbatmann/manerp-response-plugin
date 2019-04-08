@@ -1,12 +1,11 @@
 package manerp.response.plugin.pagination
 
-import grails.converters.JSON
 import grails.gorm.DetachedCriteria
 
 class ManePaginationService
 {
 
-    static ManePaginatedResult paginate(Class clss, ManePaginationProperties properties, Closure closure = null, HashSet<String> excludedFieldSet = null)
+    ManePaginatedResult paginate(Class clss, ManePaginationProperties properties, Closure closure = null, HashSet<String> excludedFieldSet = null)
     {
         def criteria = new DetachedCriteria(clss).build {
 
@@ -27,12 +26,12 @@ class ManePaginationService
         def fieldList = properties.fieldList
 
         fieldList = filterFieldList(fieldList, clss, excludedFieldSet)
-        list = filterPaginatedList(fieldList, list, clss)
+        list = filterPaginatedList(fieldList, list)
 
-        return new ManePaginatedResult(list, list.size(), properties)
+        new ManePaginatedResult(list, list.size(), properties)
     }
 
-    private static List filterPaginatedList(List fieldList, List paginatedList, Class clss)
+    private List filterPaginatedList(List fieldList, List paginatedList)
     {
         def filteredList = paginatedList
 
@@ -42,39 +41,7 @@ class ManePaginationService
 
             paginatedList.each { item ->
 
-                Map filteredMap = [:]
-
-                for ( def field in fieldList ) {
-
-                    def fieldValue
-
-                    if ( field instanceof HashMap ) {
-
-                        String key = field.keySet().getAt(0)
-                        List domainFields = field.values().getAt(0)
-                        def domain = item.getAt(key)
-
-                        Map domainMap = [:]
-
-                        domainFields.each { f ->
-                            if ( domain.hasProperty(f) ) {
-                                domainMap.put(f, domain[f])
-                            }
-                        }
-
-                        fieldValue = domainMap
-                        filteredMap.put(field.keySet().getAt(0), fieldValue)
-                    } else {
-
-                        fieldValue = item.getAt(field)
-
-                        // to lazy load domain classes
-                        fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
-                        filteredMap.put(field, fieldValue)
-                    }
-
-                }
-
+                Map filteredMap = prepareFilteredMap(item, fieldList)
                 filteredList.add(filteredMap)
             }
         }
@@ -82,7 +49,44 @@ class ManePaginationService
         filteredList
     }
 
-    private static List filterFieldList(List fieldList, Class clss, HashSet<String> excludedFieldSet)
+    private Map prepareFilteredMap(def domainInstance, List fieldList)
+    {
+        Map filteredMap = [:]
+
+        for ( def field in fieldList ) {
+
+            def fieldValue
+
+            if ( field instanceof HashMap ) {
+
+                String key = field.keySet().getAt(0)
+                List innerDomainFields = field.values().getAt(0)
+                def innerDomain = domainInstance.getAt(key)
+
+                Map innerDomainMap = [:]
+
+                innerDomainFields.each { f ->
+                    if ( innerDomain.hasProperty(f) ) {
+                        innerDomainMap.put(f, innerDomain[f])
+                    }
+                }
+
+                fieldValue = innerDomainMap
+                filteredMap.put(field.keySet().getAt(0), fieldValue)
+            } else {
+
+                fieldValue = domainInstance.getAt(field)
+
+                // to lazy load domain classes
+                fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
+                filteredMap.put(field, fieldValue)
+            }
+        }
+
+        filteredMap
+    }
+
+    private List filterFieldList(List fieldList, Class clss, HashSet<String> excludedFieldSet)
     {
         HashSet clssPropertiesSet = clss.constrainedProperties.keySet()
         clssPropertiesSet.add('id')
@@ -100,6 +104,12 @@ class ManePaginationService
         }
 
         fieldList
+    }
+
+    public Map filterDomainInstance(def domain, List fieldList, HashSet<String> excludedFieldSet)
+    {
+        List filteredFields = filterFieldList(fieldList, domain.getClass(), excludedFieldSet)
+        prepareFilteredMap(domain, fieldList)
     }
 
 }
