@@ -1,5 +1,7 @@
 package manerp.response.plugin.pagination
 
+import manerp.response.plugin.util.FieldParser
+
 class ManePaginationProperties
 {
 
@@ -29,7 +31,10 @@ class ManePaginationProperties
     ManePaginationProperties(short limit, int offset, String sortParam, String fields)
     {
         this(limit, offset, sortParam)
-        if ( fields ) parseFieldsToList(fields)
+        if ( fields ) {
+            FieldParser parser = new FieldParser();
+            this.fieldList = parser.parseFieldsToList(fields)
+        }
     }
 
     private void parseSortParamToList(String sortParam)
@@ -55,35 +60,6 @@ class ManePaginationProperties
             }
 
         }
-    }
-
-    private void parseFieldsToList(String fields)
-    {
-        this.fieldList = (fields?.replaceAll('\\s', '')).split(',')
-
-        if ( this.fieldList.size() > FIELD_QUERY_THRESHOLD ) throw new Exception("Number of requested fields cannot be greater than ${FIELD_QUERY_THRESHOLD}")
-
-        for ( int i = 0; i < fieldList.size(); i++ ) {
-
-            String field = fieldList.get(i) as String
-
-            if ( field.contains("=") ) {
-
-                Map<String, List> fieldMap = new HashMap<>()
-                List<String> keyValueList = field.split('=')
-
-                if ( keyValueList.size() > 2 ) throw new Exception("Invalid syntax for query")
-
-                String key = keyValueList.remove(0)
-                List<String> values = keyValueList.get(0).split(';')
-
-                if ( values.size() > FIELD_QUERY_THRESHOLD ) throw new Exception("Number of requested fields cannot be greater than ${FIELD_QUERY_THRESHOLD}")
-
-                fieldMap.put(key, values)
-                fieldList.set(i, fieldMap)
-            }
-        }
-
     }
 
 }
