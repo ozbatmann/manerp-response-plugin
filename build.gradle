@@ -51,7 +51,7 @@ publishing {
             name "Nexus"
             credentials {
                 username "admin"
-                password "628318_ynvkdc.!"
+                password "admin123"
             }
             url "http://157.230.125.223:8081/repository/maven-releases/"
         }
