@@ -1,59 +1,84 @@
 package manerp.response.plugin.response
 
-class ManeResponse<T> {
+class ManeResponse<T>
+{
 
     HashMap header
     T data
     StatusCode statusCode
     String message
+    String messageCode
 
-    ManeResponse() {
+    ManeResponse()
+    {
         statusCode = StatusCode.OK
         data = null
         message = null
+        messageCode = null
         header = null
     }
 
-    ManeResponse(T data) {
+    ManeResponse(T data)
+    {
         this()
         this.data = data
     }
 
-    ManeResponse(T data, StatusCode statusCode) {
+    ManeResponse(T data, StatusCode statusCode)
+    {
         this(data)
         this.statusCode = statusCode
     }
 
-    HashMap getHeader() {
+    HashMap getHeader()
+    {
         return header
     }
 
-    void setHeader(HashMap header) {
+    void setHeader(HashMap header)
+    {
         this.header = header
     }
 
-    T getData() {
+    String getMessageCode()
+    {
+        return messageCode
+    }
+
+    void setMessageCode(String messageCode)
+    {
+        this.messageCode = messageCode
+    }
+
+    T getData()
+    {
         return data
     }
 
-    void setData(T data) {
+    void setData(T data)
+    {
         this.data = data
     }
 
-    StatusCode getStatusCode() {
+    StatusCode getStatusCode()
+    {
         return statusCode
     }
 
-    void setStatusCode(StatusCode statusCode) {
+    void setStatusCode(StatusCode statusCode)
+    {
         this.statusCode = statusCode
     }
 
-    String getMessage() {
+    String getMessage()
+    {
         return message
     }
 
-    void setMessage(String message) {
+    void setMessage(String message)
+    {
         this.message = message
     }
+
 }
 
