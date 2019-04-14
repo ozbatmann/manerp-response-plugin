@@ -4,8 +4,7 @@ import grails.gorm.DetachedCriteria
 
 class ManePaginationService
 {
-
-    ManePaginatedResult paginate(Class clss, ManePaginationProperties properties, Closure closure = null, HashSet<String> excludedFieldSet = null)
+    ManePaginatedResult paginate(Class clss, ManePaginationProperties properties, Closure closure = null)
     {
         def criteria = new DetachedCriteria(clss).build {
 
@@ -23,15 +22,11 @@ class ManePaginationService
         }
 
         def list = criteria.list(offset: properties.offset, max: properties.limit)
-        def fieldList = properties.fieldList
-
-        fieldList = filterFieldList(fieldList, clss, excludedFieldSet)
-        list = filterPaginatedList(fieldList, list)
 
         new ManePaginatedResult(list, list.size(), properties)
     }
 
-    private List filterPaginatedList(List fieldList, List paginatedList)
+    public List filterPaginatedList(List fieldList, List paginatedList)
     {
         def filteredList = paginatedList
 
@@ -41,7 +36,7 @@ class ManePaginationService
 
             paginatedList.each { item ->
 
-                Map filteredMap = prepareFilteredMap(item, fieldList)
+                Map filteredMap = filterItem(item, fieldList)
                 filteredList.add(filteredMap)
             }
         }
@@ -49,33 +44,22 @@ class ManePaginationService
         filteredList
     }
 
-    private Map prepareFilteredMap(def domainInstance, List fieldList)
+    public Map filterItem(def domainInstance, List fieldList)
     {
         Map filteredMap = [:]
 
         for ( def field in fieldList ) {
 
-            def fieldValue
-
             if ( field instanceof HashMap ) {
 
                 String key = field.keySet().getAt(0)
-                List innerDomainFields = field.values().getAt(0)
-                def innerDomain = domainInstance.getAt(key)
+                def innerDomain = domainInstance.getAt(key) as Map
+                innerDomain.keySet().retainAll(field.values().getAt(0))
 
-                Map innerDomainMap = [:]
-
-                innerDomainFields.each { f ->
-                    if ( innerDomain.hasProperty(f) ) {
-                        innerDomainMap.put(f, innerDomain[f])
-                    }
-                }
-
-                fieldValue = innerDomainMap
-                filteredMap.put(field.keySet().getAt(0), fieldValue)
+                filteredMap.put(key, innerDomain)
             } else {
 
-                fieldValue = domainInstance.getAt(field)
+                def fieldValue = domainInstance.getAt(field)
 
                 // to lazy load domain classes
                 fieldValue = fieldValue.hasProperty('id') ? [id: fieldValue.id] : fieldValue
@@ -85,31 +69,4 @@ class ManePaginationService
 
         filteredMap
     }
-
-    private List filterFieldList(List fieldList, Class clss, HashSet<String> excludedFieldSet)
-    {
-        HashSet clssPropertiesSet = clss.constrainedProperties.keySet()
-        clssPropertiesSet.add('id')
-        if ( excludedFieldSet ) clssPropertiesSet.removeAll(excludedFieldSet)
-
-        fieldList.retainAll { field ->
-
-            if ( field instanceof String ) {
-
-                field in clssPropertiesSet
-            } else if ( field instanceof HashMap ) {
-
-                field.keySet().getAt(0) in clssPropertiesSet
-            }
-        }
-
-        fieldList
-    }
-
-    public Map filterDomainInstance(def domain, List fieldList, HashSet<String> excludedFieldSet)
-    {
-        List filteredFields = filterFieldList(fieldList, domain.getClass(), excludedFieldSet)
-        prepareFilteredMap(domain, fieldList)
-    }
-
 }
